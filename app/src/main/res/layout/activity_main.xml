@@ -73,7 +73,6 @@
 
     </LinearLayout>
 
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -88,8 +87,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_input_add" />
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
