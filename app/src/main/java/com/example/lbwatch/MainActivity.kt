@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         val addBtn = findViewById<FloatingActionButton>(R.id.fab)
         addBtn.setOnClickListener {
-            //val intent = Intent(this@MainActivity, AddActivity::class.java)
+            val intent = Intent(this@MainActivity, AddActivity::class.java)
             startActivityForResult(intent, ADD_VIEW_ACTIVITY_REQUEST_CODE)
         }
 
