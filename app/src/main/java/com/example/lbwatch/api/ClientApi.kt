@@ -4,7 +4,6 @@ import com.example.lbwatch.model.SearchResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-
 private const val TAG = "ClientAPI"
 interface ClientAPI {
     @GET("/")

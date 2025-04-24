@@ -1,4 +1,4 @@
-package com.example.lbwatch
+package com.example.lbwatch.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lbwatch.adapter.MainAdapter
+import com.example.lbwatch.R
 import com.example.lbwatch.model.MovieDB
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
@@ -39,10 +41,8 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(intent, ADD_VIEW_ACTIVITY_REQUEST_CODE)
         }
 
-        // Загрузить список фильмов
         loadView()
 
-        // Кнопка удаления выбранных фильмов
         deleteBtn.setOnClickListener {
             val movies = adapter.selectedMovies.toList()
             CoroutineScope(Dispatchers.IO).launch {
@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
                     dataBase.getDao().delete(movie)
                 }
 
-                // После удаления обновляем список фильмов
                 loadView()
 
                 if (movies.size == 1) {
@@ -62,13 +61,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Загружаем список фильмов и обновляем RecyclerView
     private fun loadView() {
         dataBase.getDao().getAll().asLiveData().observe(this@MainActivity) { movies ->
             if (movies.isNotEmpty()) {
                 imageEmpty.visibility = View.INVISIBLE
                 recyclerView.visibility = View.VISIBLE
-                // Инициализируем и устанавливаем адаптер
                 adapter = MainAdapter(movies, this@MainActivity)
                 recyclerView.adapter = adapter
             } else {
@@ -78,12 +75,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Обработка результата из AddActivity
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ADD_VIEW_ACTIVITY_REQUEST_CODE) {
             showToast("Фильм успешно добавлен")
-            loadView() // Обновляем список после добавления
+            loadView()
         } else {
             showToast("Нет добавленных фильмов")
         }
@@ -93,7 +89,6 @@ class MainActivity : AppCompatActivity() {
         const val ADD_VIEW_ACTIVITY_REQUEST_CODE = 1
     }
 
-    // Функция для отображения Toast сообщений
     fun showToast(str: String) {
         Toast.makeText(this, str, Toast.LENGTH_LONG).show()
     }
