@@ -1,12 +1,12 @@
 package com.example.lbwatch.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MainAdapter
     private lateinit var imageEmpty: LinearLayout
-    lateinit var dataBase: MovieDB
+    private lateinit var dataBase: MovieDB
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,13 +49,14 @@ class MainActivity : AppCompatActivity() {
                 for (movie in movies) {
                     dataBase.getDao().delete(movie)
                 }
+                launch(Dispatchers.Main) {
+                    loadView()
 
-                loadView()
-
-                if (movies.size == 1) {
-                    showToast("Movie deleted")
-                } else if (movies.size > 1) {
-                    showToast("Movies deleted")
+                    if (movies.size == 1) {
+                        showToast("Фильм успешно удален")
+                    } else if (movies.size > 1) {
+                        showToast("Фильмы успешно удалены")
+                    }
                 }
             }
         }
@@ -78,10 +79,12 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ADD_VIEW_ACTIVITY_REQUEST_CODE) {
-            showToast("Фильм успешно добавлен")
-            loadView()
-        } else {
-            showToast("Нет добавленных фильмов")
+            if (resultCode == RESULT_OK) {
+                showToast("Фильм успешно добавлен")
+                loadView()
+            } else {
+                showToast("Нет добавленных фильмов")
+            }
         }
     }
 
@@ -89,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         const val ADD_VIEW_ACTIVITY_REQUEST_CODE = 1
     }
 
-    fun showToast(str: String) {
+    private fun showToast(str: String) {
         Toast.makeText(this, str, Toast.LENGTH_LONG).show()
     }
 }
