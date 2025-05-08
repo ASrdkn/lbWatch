@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.example.lbwatch.model.Movie
 import com.example.lbwatch.model.MovieDB
-import com.example.lbwatch.ui.SearchActivity
+import com.example.lbwatch.search.SearchActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

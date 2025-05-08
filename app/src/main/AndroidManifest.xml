@@ -25,7 +25,7 @@
             android:name=".add.AddActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.SearchActivity"
+            android:name=".search.SearchActivity"
             android:exported="false" />
     </application>
 

@@ -1,4 +1,4 @@
-package com.example.lbwatch.ui
+package com.example.lbwatch.search
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lbwatch.R
-import com.example.lbwatch.adapter.SearchAdapter
 import com.example.lbwatch.api.ClientAPI
 import com.example.lbwatch.model.Item
 import kotlinx.coroutines.CoroutineScope

@@ -1,4 +1,4 @@
-package com.example.lbwatch.adapter
+package com.example.lbwatch.search
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lbwatch.R
 import com.example.lbwatch.model.Item
-import com.example.lbwatch.ui.SearchActivity
 import com.squareup.picasso.Picasso
 
 class SearchAdapter(var list: List<Item>, var listener: SearchActivity.RecyclerItemListener, var context: Context): RecyclerView.Adapter<SearchAdapter.SearchHolder>() {
