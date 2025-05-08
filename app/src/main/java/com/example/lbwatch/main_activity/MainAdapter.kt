@@ -1,4 +1,4 @@
-package com.example.lbwatch.adapter
+package com.example.lbwatch.main_activity
 
 import android.content.Context
 import android.view.LayoutInflater

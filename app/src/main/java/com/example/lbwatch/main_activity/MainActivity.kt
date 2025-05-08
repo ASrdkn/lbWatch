@@ -1,4 +1,4 @@
-package com.example.lbwatch.ui
+package com.example.lbwatch.main_activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,9 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.lbwatch.adapter.MainAdapter
 import com.example.lbwatch.R
 import com.example.lbwatch.model.MovieDB
+import com.example.lbwatch.ui.AddActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
