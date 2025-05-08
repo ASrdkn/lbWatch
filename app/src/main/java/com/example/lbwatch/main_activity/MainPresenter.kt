@@ -20,7 +20,6 @@ class MainPresenter(private val view: MainView, private val movieDb: MovieDB) {
         }
     }
 
-
     fun deleteMovies(movies: List<Movie>) {
         CoroutineScope(Dispatchers.IO).launch {
             for (movie in movies) {
