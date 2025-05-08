@@ -2,44 +2,31 @@ package com.example.lbwatch.add
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.appcompat.app.AppCompatActivity
 import com.example.lbwatch.R
-import com.example.lbwatch.model.Movie
 import com.example.lbwatch.model.MovieDB
-import com.example.lbwatch.ui.SearchActivity
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-class AddActivity : AppCompatActivity() {
-    lateinit var titleEditText: EditText
-    lateinit var releaseDateEditText: EditText
-    lateinit var movieImageView: ImageView
+class AddActivity : AppCompatActivity(), AddView {
+
+    private lateinit var presenter: AddPresenter
+    private lateinit var titleEditText: EditText
+    private lateinit var releaseDateEditText: EditText
+    private lateinit var movieImageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add)
 
-        enableEdgeToEdge()
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
+        // Инициализация презентера
         val dataBase = MovieDB.getDb(this)
+        presenter = AddPresenter(this, dataBase) // Передаем контекст и базу данных в презентер
 
         titleEditText = findViewById(R.id.movie_title)
         val searchBtn = findViewById<ImageButton>(R.id.search_btn)
@@ -49,55 +36,56 @@ class AddActivity : AppCompatActivity() {
 
         searchBtn.setOnClickListener {
             if (titleEditText.text.isEmpty()) {
-                Toast.makeText(
-                    this,
-                    "Название фильма не может быть пустым",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(this, "Название фильма не может быть пустым", Toast.LENGTH_LONG).show()
             } else {
+                // Вызов метода searchMovie в презентере
                 val title = titleEditText.text.toString()
-                val intent = Intent(this@AddActivity, SearchActivity::class.java)
-                intent.putExtra(SearchActivity.SEARCH_QUERY, title)
-                startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE)
+                presenter.searchMovie(title)
             }
         }
 
         addBtn.setOnClickListener {
-            if (titleEditText.text.isEmpty() || releaseDateEditText.text.isEmpty()) {
-                Toast.makeText(
-                    this,
-                    "Поля не могут быть пустыми",
-                    Toast.LENGTH_LONG
-                ).show()
-            } else {
-                if (movieImageView.tag == null) movieImageView.tag = ""
+            val title = titleEditText.text.toString()
+            val releaseDate = releaseDateEditText.text.toString()
+            val posterPath = (movieImageView.tag as? String)?.takeIf { it.isNotEmpty() }
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    val movie = Movie(
-                        null,
-                        titleEditText.text.toString(),
-                        releaseDateEditText.text.toString(),
-                        movieImageView.tag.toString()
-                    )
-                    dataBase.getDao().insert(movie)
-                }
-                setResult(Activity.RESULT_OK)
-                finish()
+            if (posterPath.isNullOrEmpty()) {
+                movieImageView.setImageResource(R.drawable.no_image)
+            } else {
+                Picasso.get().load(posterPath).into(movieImageView)
             }
+
+            presenter.addMovie(title, releaseDate, posterPath ?: "") // Передаем данные в презентер
+        }
+    }
+
+    override fun showError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun showMovieAdded() {
+        Toast.makeText(this, "Фильм добавлен", Toast.LENGTH_SHORT).show()
+        setResult(Activity.RESULT_OK)
+        finish()
+    }
+
+    override fun setMovieDetails(title: String, releaseDate: String, posterPath: String) {
+        titleEditText.setText(title)
+        releaseDateEditText.setText(releaseDate)
+        movieImageView.tag = posterPath
+
+        if (posterPath.isEmpty()) {
+            movieImageView.setImageResource(R.drawable.no_image)
+        } else {
+            Picasso.get().load(posterPath).into(movieImageView)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        this@AddActivity.runOnUiThread {
-            titleEditText.setText(data?.getStringExtra(SearchActivity.EXTRA_TITLE))
-            releaseDateEditText.setText(data?.getStringExtra(SearchActivity.EXTRA_RELEASE_DATE))
-            movieImageView.tag = data?.getStringExtra(SearchActivity.EXTRA_POSTER_PATH) ?: ""
-            if (movieImageView.tag !== "") {
-                Picasso.get().load(data?.getStringExtra(SearchActivity.EXTRA_POSTER_PATH)).into(movieImageView)
-            }
-            Log.d("AddActivity", movieImageView.tag.toString())
+        if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            presenter.handleSearchResult(data)
         }
     }
 
