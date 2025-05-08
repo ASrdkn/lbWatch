@@ -36,7 +36,7 @@ class AddActivity : AppCompatActivity(), AddView {
 
         searchBtn.setOnClickListener {
             if (titleEditText.text.isEmpty()) {
-                Toast.makeText(this, "Название фильма не может быть пустым", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Название фильма не может быть пустым!", Toast.LENGTH_LONG).show()
             } else {
                 // Вызов метода searchMovie в презентере
                 val title = titleEditText.text.toString()
@@ -48,13 +48,6 @@ class AddActivity : AppCompatActivity(), AddView {
             val title = titleEditText.text.toString()
             val releaseDate = releaseDateEditText.text.toString()
             val posterPath = (movieImageView.tag as? String)?.takeIf { it.isNotEmpty() }
-
-            if (posterPath.isNullOrEmpty()) {
-                movieImageView.setImageResource(R.drawable.no_image)
-            } else {
-                Picasso.get().load(posterPath).into(movieImageView)
-            }
-
             presenter.addMovie(title, releaseDate, posterPath ?: "") // Передаем данные в презентер
         }
     }
@@ -64,7 +57,6 @@ class AddActivity : AppCompatActivity(), AddView {
     }
 
     override fun showMovieAdded() {
-        Toast.makeText(this, "Фильм добавлен", Toast.LENGTH_SHORT).show()
         setResult(Activity.RESULT_OK)
         finish()
     }

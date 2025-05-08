@@ -23,7 +23,7 @@ class AddPresenter(private val view: AddView, private val movieDb: MovieDB) {
     // Метод для добавления фильма
     fun addMovie(title: String, releaseDate: String, posterPath: String) {
         if (title.isEmpty() || releaseDate.isEmpty()) {
-            view.showError("Название и дата выпуска не могут быть пустыми")
+            view.showError("Заполните все поля!")
             return
         }
 

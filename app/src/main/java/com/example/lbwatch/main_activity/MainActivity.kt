@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), MainView, MainAdapterListener {
                 showToast("Фильм успешно добавлен")
                 loadMovies()
             } else {
-                showToast("Нет добавленных фильмов")
+                showToast("Фильм для добавления не выбран")
             }
         }
     }

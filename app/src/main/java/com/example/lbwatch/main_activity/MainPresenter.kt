@@ -25,9 +25,15 @@ class MainPresenter(private val view: MainView, private val movieDb: MovieDB) {
             for (movie in movies) {
                 movieDb.getDao().delete(movie) // Удаление фильма через DAO
             }
+            // После удаления фильмов, возвращаем соответствующее сообщение в Activity
             launch(Dispatchers.Main) {
-                view.showToast("Фильмы успешно удалены")
-                loadMovies() // Перезагружаем список фильмов после удаления
+                val message = if (movies.size == 1) {
+                    "Фильм успешно удален"
+                } else {
+                    "Фильмы успешно удалены"
+                }
+                view.showToast(message)
+                loadMovies()
             }
         }
     }

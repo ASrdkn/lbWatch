@@ -60,6 +60,7 @@ class SearchActivity : AppCompatActivity(), SearchView, SearchAdapterListener {
     }
 
     override fun showEmptyState() {
+        progressBar.visibility = View.INVISIBLE
         recyclerView.visibility = View.INVISIBLE
         noMoviesTextView.visibility = View.VISIBLE
         noMoviesTextView.text = "Нет фильмов для данного поиска"
