@@ -1,4 +1,4 @@
-package com.example.lbwatch.ui
+package com.example.lbwatch.add
 
 import android.app.Activity
 import android.content.Intent
@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.lbwatch.R
 import com.example.lbwatch.model.Movie
 import com.example.lbwatch.model.MovieDB
+import com.example.lbwatch.ui.SearchActivity
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

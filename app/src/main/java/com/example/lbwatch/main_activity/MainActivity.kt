@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.lbwatch.R
 import com.example.lbwatch.model.Movie
 import com.example.lbwatch.model.MovieDB
-import com.example.lbwatch.ui.AddActivity
+import com.example.lbwatch.add.AddActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity(), MainView, MainAdapterListener {
