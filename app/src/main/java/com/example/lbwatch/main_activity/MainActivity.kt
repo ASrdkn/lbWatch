@@ -7,22 +7,22 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lbwatch.R
+import com.example.lbwatch.model.Movie
 import com.example.lbwatch.model.MovieDB
 import com.example.lbwatch.ui.AddActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainView, MainAdapterListener {
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MainAdapter
     private lateinit var imageEmpty: LinearLayout
-    private lateinit var dataBase: MovieDB
+    private lateinit var presenter: MainPresenter
+
+    private val selectedMovies = mutableSetOf<Movie>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
         imageEmpty = findViewById(R.id.no_movies_layout)
         val deleteBtn = findViewById<ImageView>(R.id.img_delete)
 
-        dataBase = MovieDB.getDb(this)
         recyclerView = findViewById(R.id.movies_recyclerview)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -41,39 +40,17 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(intent, ADD_VIEW_ACTIVITY_REQUEST_CODE)
         }
 
-        loadView()
+        presenter = MainPresenter(this, MovieDB.getDb(this))
+
+        loadMovies()
 
         deleteBtn.setOnClickListener {
-            val movies = adapter.selectedMovies.toList()
-            CoroutineScope(Dispatchers.IO).launch {
-                for (movie in movies) {
-                    dataBase.getDao().delete(movie)
-                }
-                launch(Dispatchers.Main) {
-                    loadView()
-
-                    if (movies.size == 1) {
-                        showToast("Фильм успешно удален")
-                    } else if (movies.size > 1) {
-                        showToast("Фильмы успешно удалены")
-                    }
-                }
-            }
+            presenter.deleteMovies(selectedMovies.toList())
         }
     }
 
-    private fun loadView() {
-        dataBase.getDao().getAll().asLiveData().observe(this@MainActivity) { movies ->
-            if (movies.isNotEmpty()) {
-                imageEmpty.visibility = View.INVISIBLE
-                recyclerView.visibility = View.VISIBLE
-                adapter = MainAdapter(movies, this@MainActivity)
-                recyclerView.adapter = adapter
-            } else {
-                recyclerView.visibility = View.INVISIBLE
-                imageEmpty.visibility = View.VISIBLE
-            }
-        }
+    private fun loadMovies() {
+        presenter.loadMovies()  // Делегируем загрузку фильмов презентеру
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -81,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == ADD_VIEW_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 showToast("Фильм успешно добавлен")
-                loadView()
+                loadMovies()
             } else {
                 showToast("Нет добавленных фильмов")
             }
@@ -92,7 +69,28 @@ class MainActivity : AppCompatActivity() {
         const val ADD_VIEW_ACTIVITY_REQUEST_CODE = 1
     }
 
-    private fun showToast(str: String) {
-        Toast.makeText(this, str, Toast.LENGTH_LONG).show()
+    override fun onMovieSelected(movie: Movie, isSelected: Boolean) {
+        if (isSelected) {
+            selectedMovies.add(movie)
+        } else {
+            selectedMovies.remove(movie)
+        }
+    }
+
+    // Реализация методов MainView
+    override fun showMovies(movies: List<Movie>) {
+        imageEmpty.visibility = View.INVISIBLE
+        recyclerView.visibility = View.VISIBLE
+        adapter = MainAdapter(movies, this@MainActivity, this)
+        recyclerView.adapter = adapter
+    }
+
+    override fun showEmptyState() {
+        recyclerView.visibility = View.INVISIBLE
+        imageEmpty.visibility = View.VISIBLE
+    }
+
+    override fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 }
